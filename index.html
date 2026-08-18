@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#122238" />
+  <meta name="description" content="학습 진도를 입력하고 목표 대비 페이스를 확인하는 Study Progress Tracker" />
+  <title>Study Progress Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark">SP</div>
+        <div>
+          <div class="brand-title">Study Progress Tracker</div>
+          <div class="brand-subtitle">학습 진도 관리</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="installBtn" class="btn ghost hidden" type="button">앱 설치</button>
+        <button id="aboutBtn" class="btn ghost" type="button">About</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="주요 화면">
+      <button class="tab active" data-tab="dashboard" type="button">Dashboard</button>
+      <button class="tab" data-tab="progress" type="button">Progress · Setup</button>
+    </nav>
+
+    <main class="main-content">
+      <section id="dashboardTab" class="tab-panel active" aria-labelledby="dashboard">
+        <section class="hero-panel">
+          <div>
+            <h1>학습 진도 관리</h1>
+            <p>오늘의 학습 진도와 목표 페이스를 한눈에 확인하세요.</p>
+          </div>
+          <div id="heroStatus" class="hero-status">정상 페이스</div>
+        </section>
+
+        <section class="kpi-grid" aria-label="주요 지표">
+          <article class="kpi-card">
+            <div class="kpi-label">수강 완료</div>
+            <div id="completedValue" class="kpi-value navy">0</div>
+            <div id="completedSub" class="kpi-sub">/ 75강</div>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-label">오늘 기준 목표</div>
+            <div id="targetValue" class="kpi-value navy">0.0</div>
+            <div id="targetSub" class="kpi-sub">현재 0일 경과</div>
+          </article>
+          <article class="kpi-card">
+            <div class="kpi-label">목표 대비 진도</div>
+            <div id="deltaValue" class="kpi-value green">+0.0</div>
+            <div id="deltaSub" class="kpi-sub">계획보다 앞섬</div>
+          </article>
+          <article class="kpi-card accent">
+            <div class="kpi-label">향후 필요 학습 페이스</div>
+            <div id="requiredPaceValue" class="kpi-value amber">0.00</div>
+            <div class="kpi-sub">강 / 일</div>
+          </article>
+        </section>
+
+        <section class="mid-grid">
+          <article class="panel overall-panel">
+            <div class="panel-title">전체 학습 진도</div>
+            <div class="overall-content">
+              <div id="overallPct" class="overall-pct">0%</div>
+              <div class="overall-copy">
+                <div id="overallText" class="overall-main">0강 / 75강 수강 완료</div>
+                <div id="remainingText" class="muted">남은 강의 75강 · 남은 기간 90일</div>
+              </div>
+            </div>
+            <div class="progress-track large" aria-label="전체 학습 진도">
+              <div id="overallFill" class="progress-fill"></div>
+            </div>
+          </article>
+
+          <article class="panel status-panel">
+            <div class="panel-title">학습 페이스 상태</div>
+            <div id="statusBox" class="status-box status-good">정상 페이스</div>
+            <div id="statusDesc" class="status-desc">현재 목표와 동일합니다.</div>
+            <div id="paceAch" class="muted center">현재 페이스 달성률 0%</div>
+          </article>
+        </section>
+
+        <section class="course-section">
+          <div class="section-title">과목별 진도 현황</div>
+          <div class="course-table-wrap">
+            <table class="course-table">
+              <thead>
+                <tr>
+                  <th>과목</th>
+                  <th>수강 완료</th>
+                  <th>남은 강의</th>
+                  <th>진도율</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody id="courseTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="progressTab" class="tab-panel" aria-labelledby="progress">
+        <section class="hero-panel">
+          <div>
+            <h1>진행 입력 · 학습 계획 설정</h1>
+            <p>변경한 내용은 자동 저장되고 Dashboard에 즉시 반영됩니다.</p>
+          </div>
+          <div class="hero-status neutral">자동 저장</div>
+        </section>
+
+        <section class="settings-grid">
+          <article class="panel input-panel">
+            <div class="panel-title large-title">과목별 수강 현황</div>
+            <div class="input-header-row">
+              <span>과목명</span><span>완료 강의</span><span>진도</span>
+            </div>
+            <div id="courseInputs" class="course-input-list"></div>
+          </article>
+
+          <article class="panel plan-panel">
+            <div class="panel-title large-title">학습 계획 설정</div>
+            <div class="form-grid">
+              <label for="startDate">시작일</label>
+              <input id="startDate" type="date" />
+
+              <label for="targetDays">목표기간(일)</label>
+              <input id="targetDays" type="number" min="1" max="999" />
+
+              <label>종료예정일</label>
+              <output id="endDate">-</output>
+
+              <label for="courseCount">총 과목</label>
+              <input id="courseCount" type="number" min="1" max="7" />
+
+              <label for="lecturesPerCourse">과목당 강의</label>
+              <input id="lecturesPerCourse" type="number" min="1" max="999" />
+
+              <label>총 강의</label>
+              <output id="totalLectures">-</output>
+            </div>
+
+            <div class="utility-actions">
+              <button id="exportBtn" class="btn primary" type="button">백업 내보내기</button>
+              <label class="btn secondary file-btn">
+                백업 불러오기
+                <input id="importInput" type="file" accept="application/json,.json" hidden />
+              </label>
+              <button id="resetBtn" class="btn danger" type="button">초기화</button>
+            </div>
+            <p class="small-note">데이터는 현재 브라우저에 자동 저장됩니다. 다른 기기로 옮길 때는 백업 파일을 사용하세요.</p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Study Progress Tracker v1.0.0</span>
+      <span>Developed by Anthony Oh · sg0608@knou.ac.kr</span>
+    </footer>
+  </div>
+
+  <dialog id="aboutDialog" class="about-dialog">
+    <form method="dialog" class="about-card">
+      <div class="about-title">About</div>
+      <dl>
+        <div><dt>제작자:</dt><dd>중어중문학과 오승관</dd></div>
+        <div><dt>제품명:</dt><dd>Study Progress Tracker</dd></div>
+        <div><dt>설명:</dt><dd>학습 진도 관리 프로그램</dd></div>
+        <div><dt>버전:</dt><dd>1.0.0</dd></div>
+        <div><dt>Copyright:</dt><dd>© 2026 Anthony Oh. All rights reserved.</dd></div>
+        <div><dt>Contact:</dt><dd><a href="mailto:sg0608@knou.ac.kr">sg0608@knou.ac.kr</a></dd></div>
+      </dl>
+      <button class="btn primary full" value="close">확인</button>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
