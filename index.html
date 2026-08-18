@@ -131,16 +131,16 @@
               <input id="startDate" type="date" />
 
               <label for="targetDays">목표기간(일)</label>
-              <input id="targetDays" type="number" min="1" max="999" />
+              <input id="targetDays" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
 
               <label>종료예정일</label>
               <output id="endDate">-</output>
 
               <label for="courseCount">총 과목</label>
-              <input id="courseCount" type="number" min="1" max="7" />
+              <input id="courseCount" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
 
               <label for="lecturesPerCourse">과목당 강의</label>
-              <input id="lecturesPerCourse" type="number" min="1" max="999" />
+              <input id="lecturesPerCourse" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
 
               <label>총 강의</label>
               <output id="totalLectures">-</output>
@@ -161,7 +161,7 @@
     </main>
 
     <footer class="footer">
-      <span>Study Progress Tracker v1.0.0</span>
+      <span>Study Progress Tracker v1.1.0</span>
       <span>Developed by Anthony Oh · sg0608@knou.ac.kr</span>
     </footer>
   </div>
@@ -170,10 +170,10 @@
     <form method="dialog" class="about-card">
       <div class="about-title">About</div>
       <dl>
-        <div><dt>제작자:</dt><dd>방송대 중어중문학과 오승관</dd></div>
+        <div><dt>제작자:</dt><dd>중어중문학과 오승관</dd></div>
         <div><dt>제품명:</dt><dd>Study Progress Tracker</dd></div>
         <div><dt>설명:</dt><dd>학습 진도 관리 프로그램</dd></div>
-        <div><dt>버전:</dt><dd>1.0.0</dd></div>
+        <div><dt>버전:</dt><dd>1.1.0</dd></div>
         <div><dt>Copyright:</dt><dd>© 2026 Anthony Oh. All rights reserved.</dd></div>
         <div><dt>Contact:</dt><dd><a href="mailto:sg0608@knou.ac.kr">sg0608@knou.ac.kr</a></dd></div>
       </dl>

@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'studyProgressTracker.v1';
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 const defaultData = () => ({
   startDate: '2026-08-17',
@@ -186,9 +186,10 @@ function renderCourseInputs() {
 
 function renderSettings() {
   els.startDate.value = state.startDate;
-  els.targetDays.value = state.targetDays;
-  els.courseCount.value = state.courseCount;
-  els.lecturesPerCourse.value = state.lecturesPerCourse;
+  // Do not overwrite a numeric field while the user is actively editing it.
+  if (document.activeElement !== els.targetDays) els.targetDays.value = state.targetDays;
+  if (document.activeElement !== els.courseCount) els.courseCount.value = state.courseCount;
+  if (document.activeElement !== els.lecturesPerCourse) els.lecturesPerCourse.value = state.lecturesPerCourse;
   els.endDate.value = addDays(state.startDate, state.targetDays - 1);
   els.endDate.textContent = addDays(state.startDate, state.targetDays - 1);
   els.totalLectures.value = state.courseCount * state.lecturesPerCourse;
@@ -207,12 +208,44 @@ els.tabs.forEach(btn => btn.addEventListener('click', () => {
 }));
 
 els.startDate.addEventListener('change', e => { if (isDateString(e.target.value)) { state.startDate = e.target.value; commit(); } });
-els.targetDays.addEventListener('input', e => { state.targetDays = clamp(Number(e.target.value), 1, 999); commit(); });
-els.courseCount.addEventListener('input', e => { state.courseCount = clamp(Number(e.target.value), 1, 7); commit(); });
-els.lecturesPerCourse.addEventListener('input', e => {
-  state.lecturesPerCourse = clamp(Number(e.target.value), 1, 999);
+// Mobile-safe integer editing for setup fields.
+// iOS Safari/Chrome can emit awkward change behavior for <input type="number">,
+// especially while the user clears an existing value. Keep the draft text local
+// and only normalize/save it when editing is finished.
+function bindIntegerSetting(input, min, max, applyValue) {
+  input.addEventListener('input', () => {
+    // Keep only decimal digits, but allow a temporary empty draft.
+    const cleaned = input.value.replace(/[^0-9]/g, '');
+    if (cleaned !== input.value) input.value = cleaned;
+  });
+
+  input.addEventListener('blur', () => {
+    const raw = input.value.trim();
+    if (raw === '') {
+      renderSettings();
+      return;
+    }
+    const value = clamp(Number(raw), min, max);
+    applyValue(value);
+    commit();
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') input.blur();
+  });
+}
+
+bindIntegerSetting(els.targetDays, 1, 999, value => {
+  state.targetDays = value;
+});
+
+bindIntegerSetting(els.courseCount, 1, 7, value => {
+  state.courseCount = value;
+});
+
+bindIntegerSetting(els.lecturesPerCourse, 1, 999, value => {
+  state.lecturesPerCourse = value;
   state.courses.forEach(c => c.completed = clamp(c.completed, 0, state.lecturesPerCourse));
-  commit();
 });
 
 els.courseInputs.addEventListener('input', e => {
